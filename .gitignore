@@ -1,0 +1,53 @@
+# ==============================
+# .NET / ASP.NET Core
+# ==============================
+
+## Build results
+bin/
+obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+*.sln.iml
+
+## VS Code
+.vscode/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
+
+## Publish output
+publish/
+wwwroot/lib/
+
+## Environment variables
+appsettings.Development.json
+appsettings.Local.json
+
+## Secrets
+secrets.json
+
+## Test results
+TestResults/
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+## Entity Framework
+Migrations/*
+
+## Docker
+docker-compose.override.yml
