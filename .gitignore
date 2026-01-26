@@ -51,3 +51,19 @@ Migrations/*
 
 ## Docker
 docker-compose.override.yml
+# ==============================
+# EF Core / PostgreSQL
+# ==============================
+
+## Local DB / PostgreSQL
+*.sql
+*.dump
+.pgsql/
+
+## EF Core
+Migrations/*.Designer.cs
+Migrations/*.csproj
+
+## Connection strings / env
+.env
+.env.*
