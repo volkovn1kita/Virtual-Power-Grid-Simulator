@@ -7,7 +7,7 @@ namespace Virtual_Power_Grid_Simulator.Domain.Entities;
 public class PowerPlant
 {
     // DEFAULT PROPS
-    public Guid PowerPlantId { get; } = Guid.NewGuid();
+    public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; private set; }
     public PowerPlantType Type {get; private set;}
 
