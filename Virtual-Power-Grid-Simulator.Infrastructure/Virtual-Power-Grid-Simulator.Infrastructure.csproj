@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Virtual-Power-Grid-Simulator.Application\Virtual-Power-Grid-Simulator.Application.csproj" />
+  </ItemGroup>
+
 </Project>

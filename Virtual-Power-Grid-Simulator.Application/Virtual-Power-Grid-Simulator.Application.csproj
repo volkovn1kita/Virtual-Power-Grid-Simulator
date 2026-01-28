@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Virtual-Power-Grid-Simulator.Domain\Virtual-Power-Grid-Simulator.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

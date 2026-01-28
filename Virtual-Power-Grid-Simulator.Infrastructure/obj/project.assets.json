@@ -1,11 +1,48 @@
 {
   "version": 3,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "Virtual-Power-Grid-Simulator.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Virtual-Power-Grid-Simulator.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Virtual-Power-Grid-Simulator.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Virtual-Power-Grid-Simulator.Application.dll": {}
+        }
+      },
+      "Virtual-Power-Grid-Simulator.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Virtual-Power-Grid-Simulator.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Virtual-Power-Grid-Simulator.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Virtual-Power-Grid-Simulator.Application/1.0.0": {
+      "type": "project",
+      "path": "../Virtual-Power-Grid-Simulator.Application/Virtual-Power-Grid-Simulator.Application.csproj",
+      "msbuildProject": "../Virtual-Power-Grid-Simulator.Application/Virtual-Power-Grid-Simulator.Application.csproj"
+    },
+    "Virtual-Power-Grid-Simulator.Domain/1.0.0": {
+      "type": "project",
+      "path": "../Virtual-Power-Grid-Simulator.Domain/Virtual-Power-Grid-Simulator.Domain.csproj",
+      "msbuildProject": "../Virtual-Power-Grid-Simulator.Domain/Virtual-Power-Grid-Simulator.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "Virtual-Power-Grid-Simulator.Application >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Nikita\\.nuget\\packages\\": {},
@@ -39,7 +76,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Application\\Virtual-Power-Grid-Simulator.Application.csproj": {
+              "projectPath": "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Application\\Virtual-Power-Grid-Simulator.Application.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
