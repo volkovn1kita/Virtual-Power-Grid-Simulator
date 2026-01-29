@@ -36,6 +36,9 @@
               "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Application\\Virtual-Power-Grid-Simulator.Application.csproj": {
                 "projectPath": "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Application\\Virtual-Power-Grid-Simulator.Application.csproj"
               },
+              "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Domain\\Virtual-Power-Grid-Simulator.Domain.csproj": {
+                "projectPath": "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Domain\\Virtual-Power-Grid-Simulator.Domain.csproj"
+              },
               "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Infrastructure\\Virtual-Power-Grid-Simulator.Infrastructure.csproj": {
                 "projectPath": "E:\\vs code\\Virtual-Power-Grid-Simulator\\Virtual-Power-Grid-Simulator.Infrastructure\\Virtual-Power-Grid-Simulator.Infrastructure.csproj"
               }
@@ -61,6 +64,10 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.1, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.0.4, )"
             }
           },
           "imports": [

@@ -9,11 +9,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.04" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Virtual-Power-Grid-Simulator.Application\Virtual-Power-Grid-Simulator.Application.csproj" />
+    <ProjectReference Include="..\Virtual-Power-Grid-Simulator.Domain\Virtual-Power-Grid-Simulator.Domain.csproj" />
     <ProjectReference Include="..\Virtual-Power-Grid-Simulator.Infrastructure\Virtual-Power-Grid-Simulator.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

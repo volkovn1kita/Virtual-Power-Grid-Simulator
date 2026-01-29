@@ -16,4 +16,11 @@ public interface IPowerGridService
     PowerPlant GetPowerPlantById(Guid id);
     PowerConsumer GetConsumerById(Guid id);
 
+    void TurnOnPowerPlant(Guid id);
+    void TurnOffPowerPlant(Guid id);
+    void AdjustPowerPlant(Guid id, decimal targetPower);
+
+    void ConnectConsumer(Guid consumerId);
+    void DisconnectConsumer(Guid consumerId);
+
 }

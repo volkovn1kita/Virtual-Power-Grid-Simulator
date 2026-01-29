@@ -9,10 +9,28 @@ public class PowerGridService : IPowerGridService
     private readonly List<PowerPlant> _powerPlants = new();
     private readonly List<PowerConsumer> _consumers = new();
 
+    public void AdjustPowerPlant(Guid id, decimal targetPower)
+    {
+        var plant = GetPowerPlantById(id);
+        plant.AdjustPower(targetPower, 1.0); // Assuming a time step of 1.0 for simplicity
+    }
+
     public GridSnapshot CalculateGridState(DateTime simulationTime)
     {
         GridSnapshot snapshot = new GridSnapshot(simulationTime, _powerPlants, _consumers);
         return snapshot;
+    }
+
+    public void ConnectConsumer(Guid consumerId)
+    {
+        var consumer = GetConsumerById(consumerId);
+        consumer.Connect();
+    }
+
+    public void DisconnectConsumer(Guid consumerId)
+    {
+        var consumer = GetConsumerById(consumerId);
+        consumer.Disconnect();
     }
 
     public IEnumerable<PowerConsumer> GetAllConsumers()
@@ -55,5 +73,17 @@ public class PowerGridService : IPowerGridService
         }
         _powerPlants.Add(powerPlant);
         return powerPlant.Id;
+    }
+
+    public void TurnOffPowerPlant(Guid id)
+    {
+        var plant = GetPowerPlantById(id);
+        plant.TurnOff();
+    }
+
+    public void TurnOnPowerPlant(Guid id)
+    {
+        var plant = GetPowerPlantById(id);
+        plant.TurnOn();
     }
 }
