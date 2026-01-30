@@ -7,7 +7,7 @@ namespace Virtual_Power_Grid_Simulator.Domain.Entities;
 public class PowerPlant
 {
     // DEFAULT PROPS
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; } 
     public string Name { get; private set; }
     public PowerPlantType Type {get; private set;}
 
@@ -18,6 +18,7 @@ public class PowerPlant
     // TECHNICAL LIMITATIONS
     public decimal MaxCapacity { get; private set; }
     public decimal MinStableLoad { get; private set; }
+    public decimal SetPoint { get; private set; }
 
     // DYNAMICS
     public decimal RampRatePerTick { get; private set; }
@@ -45,39 +46,35 @@ public class PowerPlant
             throw new ArgumentException("Min stable load must be 0 or positive");
 
         // SET VALUES
+        Id = Guid.NewGuid();
         Name = name;
         Type = type;
         MaxCapacity = maxCapacity;
         MinStableLoad = minStableLoad;
         RampRatePerTick = rampRate;
+        SetPoint = minStableLoad;
 
     }
 
     public void AdjustPower(decimal targetPower = 0, double weatherFactor = 1.0)
     {
-        if (!IsWorking)
-        {
-            return;
-        }
-
-        if (IsVariableRenewable)
-        {
-            CurrentPower = MaxCapacity * (decimal)weatherFactor;
-            return;
-        }
-
         if (targetPower > MaxCapacity) targetPower = MaxCapacity;
         if (targetPower < MinStableLoad) targetPower = MinStableLoad;
 
-        decimal maxChange = RampRatePerTick;
+        SetPoint = targetPower;
+    }
 
-        if(CurrentPower < targetPower)
+    public void Tick()
+    {
+        if (!IsWorking) return;
+
+        if (CurrentPower < SetPoint)
         {
-            CurrentPower += Math.Min(targetPower - CurrentPower, maxChange);
+            CurrentPower += Math.Min(SetPoint - CurrentPower, RampRatePerTick);
         }
-        else if(CurrentPower > targetPower)
+        else if (CurrentPower > SetPoint)
         {
-            CurrentPower -= Math.Min(CurrentPower - targetPower, maxChange);
+            CurrentPower -= Math.Min(CurrentPower - SetPoint, RampRatePerTick);
         }
     }
 

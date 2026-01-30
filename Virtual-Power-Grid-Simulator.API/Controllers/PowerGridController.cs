@@ -12,17 +12,20 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
     public class PowerGridController : ControllerBase
     {
         private readonly IPowerGridService _powerGridService;
+        private readonly ILogger<PowerGridController> _logger;
 
-        public PowerGridController(IPowerGridService powerGridService)
+        public PowerGridController(
+            IPowerGridService powerGridService,
+            ILogger<PowerGridController> logger)
         {
             _powerGridService = powerGridService;
+            _logger = logger;
         }
 
         [HttpGet("status")]
         public ActionResult<GridSnapshot> GetCurrentStatus()
         {
-            var time = DateTime.Now;
-            var snapshot = _powerGridService.CalculateGridState(time);
+            var snapshot = _powerGridService.CalculateGridState();
             return Ok(snapshot);
         }
 
@@ -60,6 +63,7 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
                 request.RampRate
             );
             _powerGridService.RegisterPowerPlant(plant);
+            _logger.LogInformation("Registered new power plant: {PlantName} (ID: {PlantId})", plant.Name, plant.Id);
             return CreatedAtAction(nameof(GetPowerPlantById), new { id = plant.Id }, plant);
         }
 
@@ -69,6 +73,7 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
             try
             {
                 _powerGridService.TurnOnPowerPlant(id);
+                _logger.LogInformation("Turned on power plant with ID: {PlantId}", id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -83,6 +88,7 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
             try
             {
                 _powerGridService.TurnOffPowerPlant(id);
+                _logger.LogInformation("Turned off power plant with ID: {PlantId}", id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -104,10 +110,12 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
                 _powerGridService.AdjustPowerPlant(id, request.TargetPower);
 
                 var updatedPlant = _powerGridService.GetPowerPlantById(id);
+                _logger.LogInformation("Adjusted power plant with ID: {PlantId} to target power: {TargetPower}", id, request.TargetPower);
                 return Ok(updatedPlant);
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning("Failed to adjust power plant with ID: {PlantId}. Error: {ErrorMessage}", id, ex.Message);
                 return NotFound(ex.Message);
             }
         }
@@ -145,6 +153,7 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
             );
 
             _powerGridService.RegisterConsumer(consumer);
+            _logger.LogInformation("Registered new power consumer: {ConsumerName} (ID: {ConsumerId})", consumer.Name, consumer.Id);
             return CreatedAtAction(nameof(GetConsumerById), new { id = consumer.Id }, consumer);
         }
 
@@ -154,10 +163,12 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
             try
             {
                 _powerGridService.ConnectConsumer(id);
+                _logger.LogInformation("Connected power consumer with ID: {ConsumerId}", id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning("Failed to connect power consumer with ID: {ConsumerId}. Error: {ErrorMessage}", id, ex.Message);
                 return NotFound(ex.Message);
             }
         }
@@ -168,10 +179,12 @@ namespace Virtual_Power_Grid_Simulator.API.Controllers
             try
             {
                 _powerGridService.DisconnectConsumer(id);
+                _logger.LogInformation("Disconnected power consumer with ID: {ConsumerId}", id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning("Failed to disconnect power consumer with ID: {ConsumerId}. Error: {ErrorMessage}", id, ex.Message);
                 return NotFound(ex.Message);
             }
         }

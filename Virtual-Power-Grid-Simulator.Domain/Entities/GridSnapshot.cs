@@ -6,7 +6,7 @@ namespace Virtual_Power_Grid_Simulator.Domain.Entities;
 
 public class GridSnapshot
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; }
     public DateTime TimeStamp { get; init; }
     public decimal TotalGeneration { get; init; }
     public decimal TotalDemand { get; init; }
@@ -15,6 +15,7 @@ public class GridSnapshot
 
     public GridSnapshot(DateTime time, IEnumerable<PowerPlant> powerPlants, IEnumerable<PowerConsumer> powerConsumers)
     {
+        Id = Guid.NewGuid();
         TimeStamp = time;
         TotalGeneration = CalculateTotalGeneration(powerPlants);
         TotalDemand = CalculateTotalDemand(powerConsumers, time);

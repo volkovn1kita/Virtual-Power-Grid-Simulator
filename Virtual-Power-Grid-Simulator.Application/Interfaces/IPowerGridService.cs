@@ -8,7 +8,7 @@ public interface IPowerGridService
     Guid RegisterPowerPlant(PowerPlant powerPlant);
     Guid RegisterConsumer(PowerConsumer consumer);
 
-    GridSnapshot CalculateGridState(DateTime simulationTime);
+    GridSnapshot CalculateGridState();
 
     IEnumerable<PowerPlant> GetAllPowerPlants();
     IEnumerable<PowerConsumer> GetAllConsumers();
@@ -22,5 +22,7 @@ public interface IPowerGridService
 
     void ConnectConsumer(Guid consumerId);
     void DisconnectConsumer(Guid consumerId);
+
+    void UpdateSimulationTime();
 
 }

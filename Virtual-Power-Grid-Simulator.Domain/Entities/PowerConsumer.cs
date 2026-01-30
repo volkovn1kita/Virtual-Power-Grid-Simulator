@@ -7,7 +7,7 @@ namespace Virtual_Power_Grid_Simulator.Domain.Entities;
 
 public class PowerConsumer
 {
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public ConsumerType Type { get; private set; }
     public decimal MaxPeakLoad { get; private set; }
@@ -26,6 +26,7 @@ public class PowerConsumer
             throw new ArgumentException("Priority should be in range from 1 to 10");
 
         
+        Id = Guid.NewGuid();
         Name = name;
         Type = type;
         MaxPeakLoad = maxPeakLoad;
