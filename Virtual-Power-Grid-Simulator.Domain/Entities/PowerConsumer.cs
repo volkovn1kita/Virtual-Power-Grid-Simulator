@@ -16,6 +16,8 @@ public class PowerConsumer
     [Range(1,10)]
     public int Priority { get; private set; }
     
+    public PowerConsumer() { }
+
     public PowerConsumer(string name, ConsumerType type, decimal maxPeakLoad, int priority)
     {
         if (maxPeakLoad <= 0)

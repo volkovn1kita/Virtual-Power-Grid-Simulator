@@ -2,28 +2,35 @@ using System;
 using Microsoft.Extensions.Logging;
 using Virtual_Power_Grid_Simulator.Application.Interfaces;
 using Virtual_Power_Grid_Simulator.Domain.Entities;
+using Virtual_Power_Grid_Simulator.Infrastructure.Repositories;
 
 namespace Virtual_Power_Grid_Simulator.Infrastructure.Services;
 
 public class PowerGridService : IPowerGridService
 {
     private readonly ILogger<PowerGridService> _logger;
-    private readonly List<PowerPlant> _powerPlants = new();
-    private readonly List<PowerConsumer> _consumers = new();
-    private DateTime _simulationTime = new DateTime(2026, 1, 1, 8, 0, 0);
+    private readonly PowerPlantRepository _plantRepo;
+    private readonly PowerConsumerRepository _consumerRepo;
+    private static DateTime _simulationTime = new DateTime(2026, 1, 1, 8, 0, 0);
 
-    public PowerGridService(ILogger<PowerGridService> logger)
+    public PowerGridService(ILogger<PowerGridService> logger, PowerPlantRepository plantRepo, PowerConsumerRepository consumerRepo)
     {
         _logger = logger;
+        _plantRepo = plantRepo;
+        _consumerRepo = consumerRepo;
     }
     public void AdjustPowerPlant(Guid id, decimal targetPower)
     {
-        var plant = GetPowerPlantById(id);
-        plant.AdjustPower(targetPower, 1.0);
+        var plant = _plantRepo.GetById(id) 
+                    ?? throw new KeyNotFoundException("Plant not found");
+        
+        plant.AdjustPower(targetPower);
+        
+        _plantRepo.Update(plant);
     }
     public GridSnapshot CalculateGridState()
     {
-        GridSnapshot snapshot = new GridSnapshot(_simulationTime, _powerPlants, _consumers);
+        GridSnapshot snapshot = new GridSnapshot(_simulationTime, _plantRepo.GetAll(), _consumerRepo.GetAll());
         return snapshot;
     }
 
@@ -31,53 +38,47 @@ public class PowerGridService : IPowerGridService
     {
         var consumer = GetConsumerById(consumerId);
         consumer.Connect();
+        _consumerRepo.Update(consumer);
     }
 
     public void DisconnectConsumer(Guid consumerId)
     {
         var consumer = GetConsumerById(consumerId);
         consumer.Disconnect();
+        _consumerRepo.Update(consumer);
     }
 
     public IEnumerable<PowerConsumer> GetAllConsumers()
     {
-        return _consumers.ToList();
+        return _consumerRepo.GetAll();
     }
 
     public IEnumerable<PowerPlant> GetAllPowerPlants()
     {
-        return _powerPlants.ToList();
+        return _plantRepo.GetAll();
     }
 
     public PowerConsumer GetConsumerById(Guid id)
     {
-        PowerConsumer? consumer = _consumers.FirstOrDefault(c => c.Id == id);
+        PowerConsumer? consumer = _consumerRepo.GetById(id);
         return consumer ?? throw new KeyNotFoundException($"Consumer with ID {id} not found.");
     }
 
     public PowerPlant GetPowerPlantById(Guid id)
     {
-        PowerPlant? plant = _powerPlants.FirstOrDefault(p => p.Id == id);
+        PowerPlant? plant = _plantRepo.GetById(id);
         return plant ?? throw new KeyNotFoundException($"PowerPlant with ID {id} not found.");
     }
 
     public Guid RegisterConsumer(PowerConsumer consumer)
     {
-        if(_consumers.Any(c => c.Id == consumer.Id))
-        {
-            throw new InvalidOperationException($"Consumer with ID {consumer.Id} is already registered.");
-        }
-        _consumers.Add(consumer);
+        _consumerRepo.Add(consumer);
         return consumer.Id;
     }
 
     public Guid RegisterPowerPlant(PowerPlant powerPlant)
     {
-        if(_powerPlants.Any(p => p.Id == powerPlant.Id))
-        {
-            throw new InvalidOperationException($"PowerPlant with ID {powerPlant.Id} is already registered.");
-        }
-        _powerPlants.Add(powerPlant);
+        _plantRepo.Add(powerPlant);
         return powerPlant.Id;
     }
 
@@ -85,20 +86,26 @@ public class PowerGridService : IPowerGridService
     {
         var plant = GetPowerPlantById(id);
         plant.TurnOff();
+        _plantRepo.Update(plant);
     }
 
     public void TurnOnPowerPlant(Guid id)
     {
         var plant = GetPowerPlantById(id);
         plant.TurnOn();
+        _plantRepo.Update(plant);
     }
 
     public void UpdateSimulationTime()
     {
         _simulationTime = _simulationTime.AddMinutes(12);
-        foreach( var plant in _powerPlants)
+
+        var plants = _plantRepo.GetAll();
+        
+        foreach (var plant in plants)
         {
             plant.Tick();
+            _plantRepo.Update(plant);
         }
     }
 }

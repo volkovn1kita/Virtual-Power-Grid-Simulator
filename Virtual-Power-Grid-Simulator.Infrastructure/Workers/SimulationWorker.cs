@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Virtual_Power_Grid_Simulator.Application.Interfaces;
@@ -9,25 +10,27 @@ namespace Virtual_Power_Grid_Simulator.Infrastructure.Workers;
 
 public class SimulationWorker : BackgroundService
 {
-    private readonly IPowerGridService _powerGridService;
+   private readonly IServiceProvider _serviceProvider; // <--- Беремо провайдер
     private readonly ILogger<SimulationWorker> _logger;
-    public SimulationWorker(
-        IPowerGridService powerGridService,
-        ILogger<SimulationWorker> logger)
+
+    public SimulationWorker(IServiceProvider serviceProvider, ILogger<SimulationWorker> logger)
     {
-        _powerGridService = powerGridService;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("SimulationWorker started at: {time}", DateTimeOffset.Now);
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("SimulationWorker running at: {time}", DateTimeOffset.Now);
-            _powerGridService.UpdateSimulationTime();
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var myService = scope.ServiceProvider.GetRequiredService<IPowerGridService>();
+                
+                myService.UpdateSimulationTime();
+            }
 
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
-        _logger.LogInformation("SimulationWorker stopped at: {time}", DateTimeOffset.Now);
     }
 }

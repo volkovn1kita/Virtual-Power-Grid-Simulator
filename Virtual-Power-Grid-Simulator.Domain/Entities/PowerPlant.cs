@@ -28,6 +28,9 @@ public class PowerPlant
         Type == PowerPlantType.Solar ||
         Type == PowerPlantType.Wind;
     
+
+    public PowerPlant(){ }
+
     public PowerPlant(
         string name,
         PowerPlantType type,
