@@ -39,7 +39,7 @@ public class GridSnapshot
 
     private decimal CalculateFrequency(decimal demand, decimal generation)
     {
-        return 50 + (generation - demand) * 0.05m;
+        return 50 + (generation - demand) * 0.1m;
     }
 
     private GridStatus CalculateGridStatus(decimal frequency)

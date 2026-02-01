@@ -13,8 +13,8 @@ public class OpenWeatherService : IWeatherService
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly ILogger<OpenWeatherService> _logger;
-    private WeatherInfo _cachedWeather;
-    private DateTime _lastFetchTime = DateTime.MinValue;
+    private static WeatherInfo _cachedWeather = new WeatherInfo();
+    private static DateTime _lastFetchTime = DateTime.MinValue;
     private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(15);
 
     public OpenWeatherService(HttpClient httpClient, IConfiguration configuration, ILogger<OpenWeatherService> logger)
@@ -22,8 +22,6 @@ public class OpenWeatherService : IWeatherService
         _httpClient = httpClient;
         _configuration = configuration;
         _logger = logger;
-        
-        _cachedWeather = new WeatherInfo(); 
     }
     public async Task<WeatherInfo> GetCurrentWeatherAsync()
     {
@@ -52,7 +50,7 @@ public class OpenWeatherService : IWeatherService
                 };
                 
                 _lastFetchTime = DateTime.Now;
-                _logger.LogInformation($"Weather (v2.5) updated: Temp={_cachedWeather.TemperatureC}, Wind={_cachedWeather.WindSpeed}");
+                _logger.LogInformation($"Weather (v2.5) updated: Temp={_cachedWeather.TemperatureC}");
             }
         }
         catch (Exception ex)

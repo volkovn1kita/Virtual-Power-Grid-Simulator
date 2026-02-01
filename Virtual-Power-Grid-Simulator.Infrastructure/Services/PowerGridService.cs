@@ -137,5 +137,80 @@ public class PowerGridService : IPowerGridService
             
             _plantRepo.Update(plant);
         }
+        var consumers = _consumerRepo.GetAll();
+        ManageGridStability(plants, consumers);
+    }
+    
+    private void ManageGridStability(List<PowerPlant> plants, List<PowerConsumer> consumers)
+    {
+
+        decimal frequency = CalculationFrequency(plants, consumers);
+
+        if (frequency <= 49.5m)
+        {
+            DeficitElectricity(plants, consumers);
+        }
+        else if (frequency > 50.0m)
+        {
+            ExcessElectricity(plants, consumers);
+        }
+    }
+
+    private decimal CalculationFrequency(List<PowerPlant> plants, List<PowerConsumer> consumers)
+    {
+        decimal totalGeneration = plants.Where(p => p.IsWorking).Sum(p => p.CurrentPower);
+        decimal totalDemand = consumers.Where(c => c.IsActive).Sum(c => c.CalculateConsumption(_simulationTime));
+
+        decimal frequency = 50 + (totalGeneration - totalDemand) * 0.1m;
+        return  frequency;
+    }
+
+    private void DeficitElectricity(List<PowerPlant> plants, List<PowerConsumer> consumers)
+    {
+        var candidatesToCut = consumers
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Priority)
+            .ToList();
+        
+        foreach (var consumer in candidatesToCut)
+        {
+            consumer.Disconnect();
+            _consumerRepo.Update(consumer);
+            _logger.LogWarning($"[AFLS] Disconnected {consumer.Name} (Priority {consumer.Priority})");
+
+            decimal newFreq = CalculationFrequency(plants, consumers);
+            if (newFreq > 49.5m) return;
+        }
+
+        _logger.LogCritical("Total Blackout imminent - Load Shedding failed!");
+    }
+
+    private void ExcessElectricity(List<PowerPlant> plants, List<PowerConsumer> consumers)
+    {
+        var candidatesToRestore = consumers
+            .Where(c => !c.IsActive)
+            .OrderByDescending(c => c.Priority)
+            .ToList();
+
+        foreach (var consumer in candidatesToRestore)
+        {
+            decimal predictedLoad = consumer.CalculateConsumption(_simulationTime);
+            
+            decimal currentGen = plants.Where(p => p.IsWorking).Sum(p => p.CurrentPower);
+            decimal currentDemand = consumers.Where(c => c.IsActive).Sum(c => c.CalculateConsumption(_simulationTime));
+            
+            decimal predictedFreq = 50 + (currentGen - (currentDemand + predictedLoad)) * 0.1m;
+
+            if (predictedFreq >= 49.8m)
+            {
+                consumer.Connect();
+                _consumerRepo.Update(consumer);
+                _logger.LogInformation($"[Restoration] Connected {consumer.Name}. Freq will be: {predictedFreq:F2}");
+            }
+            else
+            {
+                break; 
+            }
+        }
     }
 }
