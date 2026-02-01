@@ -33,9 +33,10 @@ public class OpenWeatherService : IWeatherService
         }
         try 
         {
-            var apiKey = _configuration["OpenWeather:ApiKey"];
-            var latitude = _configuration["OpenWeather:Lat"];
-            var longitude = _configuration["OpenWeather:Lon"];
+            var apiKey = _configuration["OpenWeatherMap:ApiKey"];
+            
+            var latitude = _configuration["OpenWeatherMap:Lat"];
+            var longitude = _configuration["OpenWeatherMap:Lon"];
 
             string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={latitude}&lon={longitude}&exclude=minutely,hourly,daily,alerts&units=metric&appid={apiKey}";
 
