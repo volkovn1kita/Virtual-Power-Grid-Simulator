@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Virtual_Power_Grid_Simulator.Application.Interfaces;
+using Virtual_Power_Grid_Simulator.Infrastructure.ExternalService;
 using Virtual_Power_Grid_Simulator.Infrastructure.Persistence;
 using Virtual_Power_Grid_Simulator.Infrastructure.Repositories;
 using Virtual_Power_Grid_Simulator.Infrastructure.Services;
@@ -10,6 +11,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddHttpClient<IWeatherService, OpenWeatherService>();
+
 
 builder.Services.AddScoped<PowerPlantRepository>();
 builder.Services.AddScoped<PowerConsumerRepository>();

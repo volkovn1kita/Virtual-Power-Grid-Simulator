@@ -67,17 +67,30 @@ public class PowerPlant
         SetPoint = targetPower;
     }
 
-    public void Tick()
+    public void Tick(double weatherEfficiency = 1.0)
     {
         if (!IsWorking) return;
+        
+        decimal target;
 
-        if (CurrentPower < SetPoint)
+        if (IsVariableRenewable)
         {
-            CurrentPower += Math.Min(SetPoint - CurrentPower, RampRatePerTick);
+            target = MaxCapacity * (decimal)weatherEfficiency;
         }
-        else if (CurrentPower > SetPoint)
+        else
         {
-            CurrentPower -= Math.Min(CurrentPower - SetPoint, RampRatePerTick);
+            target = SetPoint;
+        }
+
+        decimal maxChange = RampRatePerTick;
+
+        if (CurrentPower < target)
+        {
+            CurrentPower += Math.Min(target - CurrentPower, maxChange);
+        }
+        else if (CurrentPower > target)
+        {
+            CurrentPower -= Math.Min(CurrentPower - target, maxChange);
         }
     }
 

@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using Virtual_Power_Grid_Simulator.Application.Interfaces;
 using Virtual_Power_Grid_Simulator.Domain.Entities;
+using Virtual_Power_Grid_Simulator.Domain.Enums;
 using Virtual_Power_Grid_Simulator.Infrastructure.Repositories;
 
 namespace Virtual_Power_Grid_Simulator.Infrastructure.Services;
@@ -10,13 +11,15 @@ public class PowerGridService : IPowerGridService
 {
     private readonly ILogger<PowerGridService> _logger;
     private readonly PowerPlantRepository _plantRepo;
+    private readonly IWeatherService _weatherService;
     private readonly PowerConsumerRepository _consumerRepo;
     private static DateTime _simulationTime = new DateTime(2026, 1, 1, 8, 0, 0);
 
-    public PowerGridService(ILogger<PowerGridService> logger, PowerPlantRepository plantRepo, PowerConsumerRepository consumerRepo)
+    public PowerGridService(ILogger<PowerGridService> logger, PowerPlantRepository plantRepo, IWeatherService weatherService, PowerConsumerRepository consumerRepo)
     {
         _logger = logger;
         _plantRepo = plantRepo;
+        _weatherService = weatherService;
         _consumerRepo = consumerRepo;
     }
     public void AdjustPowerPlant(Guid id, decimal targetPower)
@@ -96,15 +99,42 @@ public class PowerGridService : IPowerGridService
         _plantRepo.Update(plant);
     }
 
-    public void UpdateSimulationTime()
+    public async Task UpdateSimulationTimeAsync()
     {
         _simulationTime = _simulationTime.AddMinutes(12);
+
+        var weather = await _weatherService.GetCurrentWeatherAsync();
+
+        double timeOfDay = _simulationTime.Hour + (_simulationTime.Minute / 60.0);
+        double sunFactor = 0.0;
+
+        if (timeOfDay >= 6 && timeOfDay <= 20)
+        {
+            sunFactor = Math.Sin((timeOfDay - 6) * Math.PI / 14.0);
+        }
+
+        double solarEfficiency = sunFactor * weather.CloudinessFactor;
+
+        double maxWindSpeed = 20.0; 
+        double windEfficiency = weather.WindSpeed / maxWindSpeed;
+        if (windEfficiency > 1.0) windEfficiency = 1.0;
 
         var plants = _plantRepo.GetAll();
         
         foreach (var plant in plants)
         {
-            plant.Tick();
+            double efficiency = 1.0;
+
+            if (plant.Type == PowerPlantType.Solar)
+            {
+                efficiency = solarEfficiency;
+            }
+            else if (plant.Type == PowerPlantType.Wind)
+            {
+                efficiency = windEfficiency;
+            }
+            plant.Tick(efficiency);
+            
             _plantRepo.Update(plant);
         }
     }

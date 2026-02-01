@@ -27,7 +27,7 @@ public class SimulationWorker : BackgroundService
             {
                 var myService = scope.ServiceProvider.GetRequiredService<IPowerGridService>();
                 
-                myService.UpdateSimulationTime();
+                await myService.UpdateSimulationTimeAsync();
             }
 
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);

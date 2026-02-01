@@ -23,6 +23,6 @@ public interface IPowerGridService
     void ConnectConsumer(Guid consumerId);
     void DisconnectConsumer(Guid consumerId);
 
-    void UpdateSimulationTime();
+    Task UpdateSimulationTimeAsync();
 
 }
