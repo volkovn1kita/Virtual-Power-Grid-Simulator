@@ -67,3 +67,4 @@ Migrations/*.csproj
 ## Connection strings / env
 .env
 .env.*
+node_modules
